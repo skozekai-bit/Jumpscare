@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Diagnostic</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #terminal {
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: #00ff00;
+            animation: blink 1s infinite;
+        }
+
+        /* The Ghost Image - Hidden by default */
+        #scare-layer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=2000&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            filter: grayscale(100%) contrast(200%);
+            z-index: 100;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .red-text { color: #ff0000; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="scare-layer"></div>
+
+    <div id="terminal">
+        <div id="output"></div>
+        <span class="cursor"></span>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+        const scareLayer = document.getElementById('scare-layer');
+        
+        const lines = [
+            "> Initializing system scan...",
+            "> Checking local directories...",
+            "> Warning: Unrecognized file found in /root/hidden",
+            "> Attempting to delete...",
+            "> ERROR: Access Denied.",
+            "> File is opening...",
+            "> Something is watching you.",
+            "> LOOK BEHIND YOU."
+        ];
+
+        let lineIndex = 0;
+
+        function typeLine() {
+            if (lineIndex < lines.length) {
+                let p = document.createElement('p');
+                if (lineIndex > 5) p.className = "red-text";
+                p.textContent = lines[lineIndex];
+                output.appendChild(p);
+                lineIndex++;
+                
+                // Increase speed as it gets scarier
+                let delay = 1500 - (lineIndex * 150);
+                setTimeout(typeLine, Math.max(delay, 500));
+            } else {
+                // The "Scare" happens 2 seconds after the last line
+                setTimeout(triggerScare, 2000);
+            }
+        }
+
+        function triggerScare() {
+            scareLayer.style.display = 'block';
+            // Optional: You can add a vibration effect for mobile users
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 500]);
+            
+            // Hide it after 1 second to leave them wondering
+            setTimeout(() => {
+                scareLayer.style.display = 'none';
+                output.innerHTML = "<p>> CONNECTION LOST.</p>";
+            }, 1000);
+        }
+
+        // Start the sequence
+        setTimeout(typeLine, 1000);
+    </script>
+</body>
+</html>
+
